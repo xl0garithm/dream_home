@@ -1,0 +1,12 @@
+[Unit]
+Description=Automates HGTV and FoodNetwork daily submissions for HGTV Dream Home Sweepstakes
+Wants=dream_home.timer
+
+[Service]
+User=modi
+Type=oneshot
+ExecStart=/usr/bin/docker start dream_home
+#RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target 
