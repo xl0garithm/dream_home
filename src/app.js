@@ -4,6 +4,18 @@ const fileHandler = require('./fileHandler');
 const HGTV_URL = 'https://www.hgtv.com/sweepstakes/hgtv-dream-home/sweepstakes';
 const FOOD_URL = 'https://www.foodnetwork.com/sponsored/sweepstakes/hgtv-dream-home-sweepstakes';
 
+
+// Date Stuff
+let ts = Date.now();
+
+let date_ob = new Date(ts);
+let date = date_ob.getDate();
+let month = date_ob.getMonth();
+let year = date_ob.getFullYear();
+let minutes = date_ob.getMinutes();
+let hours = date_ob.getHours();
+
+console.log("Timestamp: " + (month + 1) + "/" + date + "/" + year + " " + hours + ":" + minutes);
 console.log("\n\n===================================================== \n\
 HGTV Dream Home Submission Automation - Logan Carlson \n\
 ===================================================== \n");
@@ -21,9 +33,24 @@ HGTV Dream Home Submission Automation - Logan Carlson \n\
     
     const emails = await fileHandler.handleFile();
 
-    submitFormsByEmail(page, emails);
+    await submitFormsByEmail(page, emails);
+    browser.close();
 })();
 
+async function checkSuccess(iframeContent){
+    console.log("Check Success");
+    const opacity = await iframeContent.evaluate(() => {
+        const element = document.getElementById("xSectionEntry_xModule");
+        return window.getComputedStyle(element).getPropertyValue("opacity");
+    });
+
+    if(opacity === "1"){
+        console.log("Failed");
+        return false;
+    }
+    console.log(`Success, Opacity: ${opacity}`);
+    return true;
+}
 
 async function submitFormsByEmail(page, emails){
     console.log(`Emails: ${emails}`);
@@ -40,6 +67,7 @@ async function initializeBrowser() {
         defaultViewport: null,
         devtools: true,
         ignoreHTTPSErrors: true,
+	args: ['--no-sandbox'],
     });
 }
 
@@ -49,11 +77,17 @@ async function submitForm(page, url, email){
 
     iframeContent = await getIFrameContent(page);
 
-    console.log("First Form");
+    console.log(`First Form: ${email}`);
     await interactFirstForm(iframeContent, email);
     await page.waitForTimeout(2000);
-    console.log("Second Form");
-    await interactSecondForm(iframeContent);
+
+    let success = await checkSuccess(iframeContent);
+
+    if(success !== false){
+        console.log(`Second Form: ${email}`);
+        await interactSecondForm(iframeContent);
+    }
+    await page.waitForTimeout(2000);
 }
 
 async function interactPage(page, URL){

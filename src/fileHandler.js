@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const fileName = "../resources/emails.txt";
+const fileName = "/usr/src/app/resources/emails.txt";
 
 async function handleFile() {
     try {
