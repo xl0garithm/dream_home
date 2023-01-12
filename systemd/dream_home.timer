@@ -1,12 +1,8 @@
 [Unit]
-Description=Automates HGTV and FoodNetwork daily submissions for HGTV Dream Home Sweepstakes
-Wants=dream_home.timer
+Description= Automates call of dream_home.service on a random interval between 9AM and 12PM Local time
 
-[Service]
-User=modi
-Type=oneshot
-ExecStart=/usr/bin/docker start dream_home
-#RemainAfterExit=yes
-
+[Timer]
+OnCalendar=09:00:00
+RandomizedDelaySec=10800
 [Install]
 WantedBy=multi-user.target 
