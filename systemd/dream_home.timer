@@ -1,0 +1,8 @@
+[Unit]
+Description= Automates call of dream_home.service on a random interval between 9AM and 12PM Local time
+
+[Timer]
+OnCalendar=09:00:00
+RandomizedDelaySec=10800
+[Install]
+WantedBy=multi-user.target 
